@@ -41,7 +41,9 @@
   "einschalten",
   "megakino",
   "moflixstream",
-  "appletrailers"
+  "appletrailers",
+  "cineb",
+  "sevenreels"
  ],
  "cartoonsandanime": [
   "aniworld",
@@ -115,10 +117,12 @@
   "putlockertvto",
   "cineto",
   "worldfree4u",
+  "cineb",
   "dailymotion",
   "rteieplayer",
   "playrtsiw",
   "appletrailers",
+  "sevenreels",
   "orthobulletscom",
   "vumedicom"
  ],
