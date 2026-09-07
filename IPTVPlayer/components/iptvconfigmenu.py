@@ -136,6 +136,15 @@ config.plugins.iptvplayer.debugprint = ConfigSelection(default="", choices=[("",
                                                                             ("/tmp/iptv.dbg", _("Yes, to file /tmp/iptv.dbg")),
                                                                             ("/home/root/logs/iptv.dbg", _("Yes, to file /home/root/logs/iptv.dbg")),
                                                                             ])
+config.plugins.iptvplayer.debug_clear_on_start = ConfigYesNo(default=True)
+config.plugins.iptvplayer.debug_max_size = ConfigSelection(default="0", choices=[
+    ("0", _("unlimited")), ("2", "2 MB"), ("5", "5 MB"), ("10", "10 MB"),
+    ("20", "20 MB"), ("50", "50 MB"), ("100", "100 MB")])
+config.plugins.iptvplayer.debug_on_limit = ConfigSelection(default="truncate", choices=[
+    ("truncate", _("truncate the file")),
+    ("rotate", _("rotate (keep the old one as iptv-<date>.dbg)"))])
+config.plugins.iptvplayer.debug_rotate_keep = ConfigSelection(default="3", choices=[
+    ("1", "1"), ("2", "2"), ("3", "3"), ("5", "5"), ("10", "10")])
 
 # icons
 config.plugins.iptvplayer.IconsSize = ConfigSelection(default="100", choices=[("100", "100x100"), ("120", "120x120"), ("135", "135x135")])
@@ -382,10 +391,16 @@ class E2iVKQuickSettings(ConfigBaseWidget):
 
 class ConfigMenu(ConfigBaseWidget):
 
+    HAS_BLUE_KEY = True
+
     def __init__(self, session):
         printDBG("ConfigMenu.__init__ -------------------------------")
         self.list = []
         ConfigBaseWidget.__init__(self, session)
+        try:
+            self["key_blue"].setText(_("Info"))
+        except Exception:
+            printExc()
         # remember old
         self.showcoverOld = config.plugins.iptvplayer.showcover.value
         self.SciezkaCacheOld = config.plugins.iptvplayer.SciezkaCache.value
@@ -403,6 +418,13 @@ class ConfigMenu(ConfigBaseWidget):
     def layoutFinished(self):
         ConfigBaseWidget.layoutFinished(self)
         self.setTitle(_("E2iPlayer - settings"))
+
+    def keyBlue(self):
+        try:
+            from Plugins.Extensions.IPTVPlayer.components.iptvplayerinfoview import OpenInfoView
+            OpenInfoView(self.session)
+        except Exception:
+            printExc()
 
     @staticmethod
     def fillConfigList(list,):
@@ -538,7 +560,16 @@ class ConfigMenu(ConfigBaseWidget):
         list.append(getConfigListEntry(_("Remember last search history selection"), config.plugins.iptvplayer.rememberHistorySelection))
         list.append(getConfigListEntry(_("T9 letter jump in lists"), config.plugins.iptvplayer.enableT9MainList))
         list.append(getConfigListEntry(_("Write current title to file:"), config.plugins.iptvplayer.curr_title_file))
+
+        list.append(getConfigListEntry(_("----- DEBUG CONFIGURATION -----"), ))
         list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
+        if config.plugins.iptvplayer.debugprint.value not in ("", "console"):
+            list.append(getConfigListEntry("    " + _("Clear the log file at plugin start"), config.plugins.iptvplayer.debug_clear_on_start))
+            list.append(getConfigListEntry("    " + _("Maximum log file size"), config.plugins.iptvplayer.debug_max_size))
+            if config.plugins.iptvplayer.debug_max_size.value != "0":
+                list.append(getConfigListEntry("    " + _("When the maximum is reached"), config.plugins.iptvplayer.debug_on_limit))
+                if config.plugins.iptvplayer.debug_on_limit.value == "rotate":
+                    list.append(getConfigListEntry("        " + _("Number of rotated files to keep"), config.plugins.iptvplayer.debug_rotate_keep))
 
     def runSetup(self):
         self.list = []
@@ -655,7 +686,10 @@ class ConfigMenu(ConfigBaseWidget):
             config.plugins.iptvplayer.favourites_use_watched_flag,
             config.plugins.iptvplayer.hostsListType,
             config.plugins.iptvplayer.skinforceallinternal,
-            config.plugins.iptvplayer.IPTVDMShowNotification
+            config.plugins.iptvplayer.IPTVDMShowNotification,
+            config.plugins.iptvplayer.debugprint,
+            config.plugins.iptvplayer.debug_max_size,
+            config.plugins.iptvplayer.debug_on_limit
             # config.plugins.iptvplayer.captcha_bypass_free,
             # config.plugins.iptvplayer.captcha_bypass_pay
         ]
