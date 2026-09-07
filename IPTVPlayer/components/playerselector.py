@@ -646,7 +646,10 @@ class _PlayerSelectorListMode:
                     options.append((_("Enable reordering mode"), "CHANGE_REORDERING_MODE:ON"))
                 elif self.reorderingMode:
                     options.append((_("Disable reordering mode"), "CHANGE_REORDERING_MODE:OFF"))
-                options.append((_("Sort by name"), "SORT_NAME"))
+                if self.sortItem:
+                    options.append((_("Reset group"), "reset_group"))
+                else:
+                    options.append((_("Sort by name"), "SORT_NAME"))
                 options.append((_("Search"), "SEARCH"))
             options.append((_("Download manager"), "IPTVDM"))
             if not self.simpleListMode:
@@ -654,8 +657,6 @@ class _PlayerSelectorListMode:
                     options.append((_("Disable/Enable services"), "config_hosts"))
                 elif self.groupName in ['selectgroup']:
                     options.append((_("Disable/Enable groups"), "config_groups"))
-                else:
-                    options.append((_("Reset group"), "reset_group"))
 
             if not self.simpleListMode:
                 if self.groupName == 'selecthost':
@@ -894,6 +895,7 @@ if GRIDSUPPORT:
             self.numOfLockedItems = numOfLockedItems
             self.reorderingMode = False
             self.reorderingItemSelected = False
+            self.sortItem = False
 
             self.lastSelection = PlayerSelectorWidget.LAST_SELECTION.get(self.groupName, 0)
 
@@ -1054,6 +1056,7 @@ if GRIDSUPPORT:
             if ret:
                 ret = ret.privateData
                 if ret == "SORT_NAME":
+                    self.sortItem = True
                     self.moveIndex = -1
                     self.reorderingMode = False
                     self.currList = sorted(self.currList, key=lambda x: x[1])
@@ -1900,6 +1903,7 @@ else:
             if ret:
                 ret = ret.privateData
                 if ret == "SORT_NAME":
+                    self.sortItem = True
                     self.moveIndex = -1
                     self.reorderingMode = False
                     self.currList = sorted(self.currList, key=lambda x: x[1])
