@@ -586,6 +586,14 @@ class _PlayerSelectorListMode:
         return _getSearchResultsHeight(numItems)
 
     def showInfo(self):
+        try:
+            from Plugins.Extensions.IPTVPlayer.components.iptvplayerinfoview import OpenInfoView
+            if OpenInfoView(self.session):
+                return
+        except Exception:
+            printExc()
+
+        # fallback - the plain "About" MessageBox
         TextMSG = _('version') + " :\n" + GetIPTVPlayerVersion() + '\n\n'
         TextMSG += _("www:") + " " + "\nhttps://github.com/oe-mirrors/e2iplayer" + '\n\n'
         TextMSG += _("Developers:") + " " + "\n"
@@ -603,8 +611,10 @@ class _PlayerSelectorListMode:
             'Blindspot76',
             'Max (maxbambi)',
             '-=Mario=- (zadmario)',
+            'MohamedOS',
             'Lululla (Belfagor2005)',
             'jbleyel',
+            'Mr.X',
             'and others'
         ]
         TextMSG += ", ".join(developers)

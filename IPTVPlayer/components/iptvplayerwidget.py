@@ -42,7 +42,7 @@ from Plugins.Extensions.IPTVPlayer.libs.pCommon import CParsingHelper
 from Plugins.Extensions.IPTVPlayer.libs.urlparser import urlparser
 from Plugins.Extensions.IPTVPlayer.tools.iptvfavourites import IPTVFavourites
 from Plugins.Extensions.IPTVPlayer.tools.iptvtools import FreeSpace as iptvtools_FreeSpace, \
-                                                          mkdirs as iptvtools_mkdirs, GetIPTVPlayerVersion, \
+                                                          mkdirs as iptvtools_mkdirs, GetIPTVPlayerVersion, GetShortSystemInfo, \
                                                           printDBG, printExc, iptv_system, GetHostsList, IsHostEnabled, \
                                                           eConnectCallback, GetSkinsDir, GetIconDir, GetPluginDir, \
                                                           SortHostsList, GetHostsOrderList, CSearchHistoryHelper, \
@@ -261,7 +261,7 @@ class E2iPlayerWidget(Screen):
         )
 
     def __init__(self, session):
-        printDBG("E2iPlayerWidget.__init__ desktop IPTV_VERSION[%s]\n" % (E2iPlayerWidget.IPTV_VERSION))
+        printDBG("E2iPlayerWidget.__init__ desktop IPTV_VERSION[%s] %s\n" % (E2iPlayerWidget.IPTV_VERSION, GetShortSystemInfo()))
         self.session = session
 
         self.skin = self.__prepareSkin()
