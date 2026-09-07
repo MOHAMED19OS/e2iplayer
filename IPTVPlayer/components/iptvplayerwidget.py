@@ -1041,6 +1041,11 @@ class E2iPlayerWidget(Screen):
         if hasattr(self.host.host, 'history'):
             options.append((_("Edit search history"), "EditSearchHistory"))
         options.append((_("Download manager"), "IPTVDM"))
+        # free-text jump inside the list currently on screen (a browsing aid
+        # like the T9 letter-jump, but matches anywhere in the title) - never
+        # re-queries the host, just moves the selection
+        if self.visible and len(self.currList) > 1 and not self.isInWorkThread() and self["list"].getVisible():
+            options.append((_("Find item"), "FIND_ENTRY"))
         # only reachable through here - INFO (what keyHelp() binds
         # directly to on e2ivk.py's on-screen keyboard) already opens the
         # article view on this screen, so Help has no other entry point
@@ -1227,6 +1232,8 @@ class E2iPlayerWidget(Screen):
                     self.session.open(SearchHistoryEditor, historyFile=historyFile, reverseForDisplay=True, reverseForWrite=True)
                 else:
                     self.session.open(MessageBox, _('Search history is not available for this host.'), type=MessageBox.TYPE_ERROR, timeout=5)
+            elif ret[1] == 'FIND_ENTRY':
+                self._openFindEntry()
             elif ret[1].startswith("HostAction:"):
                 try:
                     idx = int(ret[1].split(":")[1])
@@ -1234,6 +1241,49 @@ class E2iPlayerWidget(Screen):
                         self._hostActions[idx][1](self.session)
                 except Exception:
                     printExc()
+
+    def _openFindEntry(self):
+        # local filter over self.currList - opens the virtual keyboard, then
+        # jumps straight to the hit (or shows a picker when several match)
+        if not (self.visible and len(self.currList) > 1 and not self.isInWorkThread() and self["list"].getVisible()):
+            return
+        caps = {}
+        virtualKeyboard = GetVirtualKeyboard(caps)
+        if caps.get('has_additional_params'):
+            self.session.openWithCallback(self._findEntryCallback, virtualKeyboard, title=_("Find item"), text='', additionalParams={})
+        else:
+            self.session.openWithCallback(self._findEntryCallback, virtualKeyboard, title=_("Find item"), text='')
+
+    def _findEntryCallback(self, text=None):
+        if not text:
+            return
+        query = text.strip().lower()
+        if not query:
+            return
+        matches = []
+        for idx, item in enumerate(self.currList):
+            name = getattr(item, 'name', '') or ''
+            if query in name.lower():
+                matches.append((name, idx))
+        if not matches:
+            self.session.open(MessageBox, _("No matching entries found."), type=MessageBox.TYPE_INFO, timeout=5)
+            return
+        if len(matches) == 1:
+            self["list"].moveToIndex(matches[0][1])
+            return
+        choiceItems = [IPTVChoiceBoxItem(name=name, privateData=idx) for name, idx in matches]
+        height = self._getMoviePlayerPickerHeight(len(choiceItems))
+        openChoiceBox(self.session, {'width': 600, 'height': height, 'current_idx': 0, 'title': _("Matching entries"), 'options': choiceItems, 'list_class': IPTVPlayerSelectOptionChoiceBoxList, 'chrome': True, 'footerMargin': 136}, self._findEntryResultCallback)
+
+    def _findEntryResultCallback(self, ret):
+        if ret is None:
+            return
+        try:
+            idx = ret.privateData
+            if isinstance(idx, int) and 0 <= idx < len(self.currList):
+                self["list"].moveToIndex(idx)
+        except Exception:
+            printExc()
 
     def keyHelp(self):
         # same read-only icon+explanation list pattern as e2ivk.py's own
@@ -2199,7 +2249,16 @@ class E2iPlayerWidget(Screen):
                 prevFunction = self.selectHost
                 protectedByPin = config.plugins.iptvplayer.configProtectedByPin.value
             elif ret[1] == "reset_group":
-                self.groupObj.resetHostList(ret[2])
+                grp = ret[2] if len(ret) > 2 else ''
+                try:
+                    if grp == 'selectgroup':
+                        self.groupObj.resetGroupList()
+                    elif grp in ('selecthost', 'all'):
+                        self.groupObj.resetHostsOrder()
+                    elif grp:
+                        self.groupObj.resetHostList(grp)
+                except Exception:
+                    printExc()
                 self.selectHost()
             elif ret[1] == "config_hosts":
                 nextFunction = self.runConfigHosts
