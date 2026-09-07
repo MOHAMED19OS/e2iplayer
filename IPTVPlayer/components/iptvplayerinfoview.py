@@ -70,7 +70,7 @@ _PROBE_SCRIPT = (
     'w(){ command -v "$1" 2>/dev/null || echo "-"; }; '
     'echo "@@hlsdl";       ($T hlsdl %s            || true) | head -n 2; '
     'echo "@@cmdwrap";     ($T cmdwrap %s          || true) | head -n 1; '
-    'echo "@@lsdir";       w lsdir; '
+    'echo "@@lsdir";       ($T lsdir --version %s  || true) | head -n 1; w lsdir; '
     'echo "@@f4mdump";     ($T f4mdump %s          || true) | head -n 1; '
     'echo "@@ffmpeg";      ($T ffmpeg -version %s   || true) | head -n 1; '
     'echo "@@wget";        ($T wget --version %s    || true) | head -n 1; '
@@ -82,7 +82,7 @@ _PROBE_SCRIPT = (
     '  ($T duk $D %s || true) | head -n 1; rm -f $D; '
     'echo "@@deps";        (opkg list-installed 2>/dev/null | grep -i e2iplayer-deps || true); '
     'echo "@@end"\n'
-) % ((_P,) * 9)
+) % ((_P,) * 10)
 
 _PROBE_CACHE = None       # parsed binary block, reused for the whole session
 _PROBE_KEEPALIVE = None   # holds the iptv_system object until its callback fires
@@ -266,9 +266,13 @@ class _SystemInfo(object):
                     return line
             return v[0] if v else _("not found")
 
-        def present(key):
-            v = (sections.get(key) or ["-"])[0]
-            return _("installed") if v and v != "-" else _("not installed")
+        def lsdir_val():
+            v = sections.get("lsdir") or []
+            for line in v:
+                if line.lower().startswith("lsdir v"):
+                    return line
+            tail = v[-1] if v else "-"
+            return _("installed") if tail and tail != "-" else _("not installed")
 
         def banner(key):
             v = sections.get(key) or []
@@ -286,7 +290,7 @@ class _SystemInfo(object):
         out.append(row("hlsdl", first("hlsdl")))
         out.append(row("_subparser", self._subparserVersion()))
         out.append(row("cmdwrap", banner("cmdwrap")))
-        out.append(row("lsdir", present("lsdir")))
+        out.append(row("lsdir", lsdir_val()))
         out.append(row("f4mdump", banner("f4mdump")))
         deps = sections.get("deps") or []
         if deps:
