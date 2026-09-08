@@ -286,7 +286,7 @@ class Myjdapi:
             if params is not None:
                 response = self._decrypt(self._device_encryption_token, encrypted_response_text)
             else:
-                return {"data": response}
+                return {"data": encrypted_response_text.decode('utf-8')}
         jsondata = json.loads(response.decode('utf-8'))
         if jsondata['rid'] != self._request_id:
             self.update_request_id()

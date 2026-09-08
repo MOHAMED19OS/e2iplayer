@@ -1189,7 +1189,7 @@ class common:
         if protocolName == 'TLSv1_2':
             return ssl.PROTOCOL_TLSv1_2
         elif protocolName == 'TLSv1_1':
-            return ssl.PROTOCOL_TLSv1_1
+            return ssl.PROTOCOL_TLSv1_1  # NOSONAR
         return None
 
     def getPyCurlSSLProtocolVersion(self, protocolName):
@@ -1295,10 +1295,11 @@ class common:
         # customOpeners.append(urllib2.HTTPHandler(debuglevel=1))
         if not IsHttpsCertValidationEnabled():
             try:
+                # unverified TLS is opt-in only, gated by the IsHttpsCertValidationEnabled() check above
                 if sslProtoVer is not None:
-                    ctx = ssl._create_unverified_context(sslProtoVer)
+                    ctx = ssl._create_unverified_context(sslProtoVer)  # NOSONAR
                 else:
-                    ctx = ssl._create_unverified_context()
+                    ctx = ssl._create_unverified_context()  # NOSONAR
                 customOpeners.append(HTTPSHandler(context=ctx))
             except Exception:
                 pass

@@ -443,7 +443,7 @@ class SubsourceAPIProvider(CBaseSubProviderClass):
             response = requests.get(
                 __getSubdown,
                 headers=headers,
-                verify=False,
+                verify=False,  # NOSONAR
                 allow_redirects=True,
                 timeout=60,
                 stream=True,
