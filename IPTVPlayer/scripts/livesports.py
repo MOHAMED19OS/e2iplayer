@@ -59,7 +59,8 @@ def getPage(url, params={}):
     customOpeners = []
 
     try:
-        ctx = ssl._create_unverified_context(params['ssl_protocol']) if params.get('ssl_protocol', None) is not None else ssl._create_unverified_context()
+        # box CA stores are unreliable - this standalone helper always skips cert verification
+        ctx = ssl._create_unverified_context(params['ssl_protocol']) if params.get('ssl_protocol', None) is not None else ssl._create_unverified_context()  # NOSONAR
         customOpeners.append(HTTPSHandler(context=ctx))
     except Exception:
         pass

@@ -736,9 +736,9 @@ class Host(CBaseHostClass, XXXParser):
 	def getJumpItem(self, max_page, url, name):
 		name = name.split('-')[0] + "-JUMP"
 		if max_page:
-			return CDisplayListItem(_("Jump"), _("Jump to a selected page, max: {}").format(max_page), CDisplayListItem.TYPE_CATEGORY, [url], name, '', str(max_page) if max_page else None, imageType="JUMP")
+			return CDisplayListItem(_("Jump"), _("Jump to a selected page, max: {}").format(max_page), CDisplayListItem.TYPE_CATEGORY, [url], name, '', str(max_page), imageType="JUMP")
 		else:
-			return CDisplayListItem(_("Jump"), _("Jump to a selected page"), CDisplayListItem.TYPE_CATEGORY, [url], name, '', str(max_page) if max_page else None, imageType="JUMP")
+			return CDisplayListItem(_("Jump"), _("Jump to a selected page"), CDisplayListItem.TYPE_CATEGORY, [url], name, '', None, imageType="JUMP")
 
 	def getLastItem(self, last_number, url, name):
 		return CDisplayListItem(_("Last"), _('Page:') + " " + str(last_number), CDisplayListItem.TYPE_CATEGORY, [url], name, '', 'last_page', imageType="LAST")

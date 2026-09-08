@@ -22,7 +22,6 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Tools.Directories import fileExists
 import datetime
 import os
-import re
 ###################################################
 
 
@@ -164,21 +163,6 @@ class DMHelper:
             return newFileName, tmpFileName
         else:
             return newFileName
-
-    @staticmethod
-    def getProgressFromF4fSTSFile(file):
-        ret = 0
-        try:
-            fo = open(file, "r")
-            lines = fo.readlines()
-            fo.close()
-        except Exception:
-            return ret
-        if 0 < len(lines):
-            match = re.search("|PROGRESS|([0-9]+?)/([0-9]+?)|", lines[1])
-            if match:
-                ret = 100 * int(match.group(1)) / int(match.group(2))
-        return ret
 
     @staticmethod
     def getFileSize(filename):

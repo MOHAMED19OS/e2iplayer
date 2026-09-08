@@ -364,7 +364,7 @@ class m4sport(CBaseHostClass):
                     vl = 'https:' + vl
                 if not self.cm.isValidUrl(vl):
                     return ''
-                if len(vl) != '':
+                if vl:
                     bu = vl
         except Exception:
             return ''
