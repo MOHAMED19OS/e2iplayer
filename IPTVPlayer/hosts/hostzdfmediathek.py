@@ -151,11 +151,7 @@ class ZDFmediathek(GenericFolderWatchedScraperMixin, CBaseHostClass):
         return sts, data
 
     def getIconUrl(self, url):
-        url = self.getFullUrl(url)
-        if url.startswith('https://'):
-            url = 'http' + url[5:]
-
-        return url
+        return self.getFullUrl(url)
 
     def _getNum(self, v, default=0):
         try:
@@ -415,9 +411,11 @@ class ZDFmediathek(GenericFolderWatchedScraperMixin, CBaseHostClass):
                 for item in data:
                     quality = item['quality']
                     url = item['url']
-                    if url.startswith('https://'):
-                        url = 'http' + url[5:]
-                    for type in [{'pattern': 'http_m3u8_http', 'name': 'm3u8'}, {'pattern': 'mp4_http', 'name': 'mp4'}]:
+                    # keep the https URLs ZDF actually serves - the old
+                    # 'http' + url[5:] downgrade was a workaround for ancient
+                    # enigma2 images that could not do TLS to the Akamai CDN;
+                    # modern images do, and the CDN answers both schemes.
+                    for type in [{'pattern': 'm3u8', 'name': 'm3u8'}, {'pattern': 'mp4_', 'name': 'mp4'}]:
                         if type['pattern'] not in item['type']:
                             continue
                         if type['name'] == 'mp4':
