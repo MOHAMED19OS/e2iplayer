@@ -512,6 +512,10 @@ class common:
             GetIPTVNotify().push(r'\s'.join([msg1, msg2]), 'error', 40)
             raise Exception("Wrong usage!")
 
+        # work on our own copy - the code below mutates params (return_data,
+        # save_to_file, use_cookie, ssl_protocol) and callers pass shared dicts
+        params = dict(params)
+
         # by default we will work in return_data mode
         if 'return_data' not in params:
             params['return_data'] = True
@@ -842,7 +846,7 @@ class common:
                 try:
                     move(params['save_to_file'], new_name)
                     self.convertWebp(new_name)
-                except:
+                except Exception:
                     pass
 
         except pycurl.error as e:
@@ -885,7 +889,7 @@ class common:
                     move(output_path, file_path)
                     # printDBG("PCommon.convertWebp rename %s %s" % (output_path, file_path))
                     return
-                except:
+                except Exception:
                     printExc()
                     return
 
@@ -1230,6 +1234,9 @@ class common:
             GetIPTVNotify().push(r'\s'.join([msg1, msg2]), 'error', 40)
             raise Exception("Wrong usage!")
 
+        # our own copy - the cookie block below does params['use_cookie'] = True
+        params = dict(params)
+
         if 'max_data_size' in params and not params.get('return_data', False):
             raise Exception("return_data == False is not accepted with max_data_size.\nPlease also note that return_data == False is deprecated and not supported with PyCurl HTTP backend!")
 
@@ -1495,6 +1502,9 @@ class common:
         return strTab
 
     def getPageRequest(self, baseUrl, params={}, post_data=None):
+
+        # our own copy - the cookie block below does params['use_cookie'] = True
+        params = dict(params)
 
         self.meta = {}
         metadata = self.meta

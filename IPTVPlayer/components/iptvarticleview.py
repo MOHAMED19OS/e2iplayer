@@ -251,7 +251,7 @@ class IPTVArticleView(Screen):
                             img = Image.open(file_path)
                             img.save(file_path, format="jpeg", quality=80)
                             img.close()
-                        except:
+                        except Exception:
                             printExc()
                     elif not webPEnabled:
                         return

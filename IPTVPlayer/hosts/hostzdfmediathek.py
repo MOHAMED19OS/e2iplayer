@@ -15,7 +15,7 @@ from Plugins.Extensions.IPTVPlayer.libs.urlparserhelper import getDirectM3U8Play
 from Plugins.Extensions.IPTVPlayer.libs.e2ijson import loads as json_loads
 ###################################################
 from Plugins.Extensions.IPTVPlayer.tools.iptvtypes import strwithmeta
-from Plugins.Extensions.IPTVPlayer.p2p3.UrlLib import urllib_quote, urllib_unquote
+from Plugins.Extensions.IPTVPlayer.p2p3.UrlLib import urllib_quote
 from Plugins.Extensions.IPTVPlayer.p2p3.pVer import isPY2
 
 ###################################################
@@ -143,11 +143,6 @@ class ZDFmediathek(GenericFolderWatchedScraperMixin, CBaseHostClass):
         HTTP_HEADER = dict(self.HEADER)
         params.update({'header': HTTP_HEADER})
 
-        if 'zdf-cdn.live.cellular.de' in url and False:
-            proxy = 'http://www.proxy-german.de/index.php?q={0}&hl=2e1'.format(urllib_quote(url, ''))
-            params['header']['Referer'] = proxy
-            # params['header']['Cookie'] = 'flags=2e5;'
-            url = proxy
         sts, data = self.cm.getPage(url, params, post_data)
         if sts and None is data:
             sts = False
@@ -157,22 +152,10 @@ class ZDFmediathek(GenericFolderWatchedScraperMixin, CBaseHostClass):
 
     def getIconUrl(self, url):
         url = self.getFullUrl(url)
-        if 'zdf-cdn.live.cellular.de' in url and False:
-            proxy = 'http://www.proxy-german.de/index.php?q={0}&hl=2e1'.format(urllib_quote(url, ''))
-            params = {}
-            params['User-Agent'] = self.HEADER['User-Agent'],
-            params['Referer'] = proxy
-            params['Cookie'] = 'flags=2e5;'
-            url = strwithmeta(proxy, params)
-        elif url.startswith('https://'):
+        if url.startswith('https://'):
             url = 'http' + url[5:]
 
         return url
-
-    def getFullUrl(self, url):
-        if 'proxy-german.de' in url:
-            url = urllib_unquote(self.cm.ph.getSearchGroups(url + '&', r'''\?q=(http[^&]+?)&''')[0])
-        return CBaseHostClass.getFullUrl(self, url)
 
     def _getNum(self, v, default=0):
         try:
