@@ -427,7 +427,7 @@ class m4sport(CBaseHostClass):
                 if len(tt) == 2:
                     bv = tt[1].strip()[:-6].capitalize()
             return bv
-        except:
+        except Exception:
             return '-'
 
     def listSearchResult(self, cItem, searchPattern, searchType):

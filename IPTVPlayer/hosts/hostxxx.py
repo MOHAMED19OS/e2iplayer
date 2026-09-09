@@ -5162,7 +5162,7 @@ class Host(CBaseHostClass, XXXParser):
 			sts, data = self._getPage(url, self.defaultParams)
 			if not sts:
 				return ''
-			data = data = data.split('<li><a href')
+			data = data.split('<li><a href')
 			if len(data):
 				del data[0]
 			for item in data:
@@ -19536,11 +19536,11 @@ class Host(CBaseHostClass, XXXParser):
 			prev = self.cm.ph.getSearchGroups(data, 'prev"><a href=["]([^"]+?)["]', 1, True)[0]
 			if prev:
 				printDBG('PREVIOUS: ' + prev)
-			first = self.cm.ph.getSearchGroups(data, 'first"><a href=["]([^"]+?)["]', 1, True)[0]
-			if first:
-				if first.startswith('/'):
-					first = self.MAIN_URL + first
-				printDBG('FIRST: ' + first)
+			firstHref = self.cm.ph.getSearchGroups(data, 'first"><a href=["]([^"]+?)["]', 1, True)[0]
+			if firstHref:
+				if firstHref.startswith('/'):
+					firstHref = self.MAIN_URL + firstHref
+				printDBG('FIRST: ' + firstHref)
 			data = data.split('class="item  "')
 			if len(data):
 				del data[0]
@@ -19580,9 +19580,9 @@ class Host(CBaseHostClass, XXXParser):
 				printDBG('PREV NUMBER: ' + str(prev_number))
 				if int(prev_number) >= 2:
 					valTab.append(self.getPreviousItem(str(prev_number), previous, name, "previous"))
-			if first:
+			if firstHref:
 				if int(next_number) >= 3 or int(last_number) >= 3:
-					valTab.append(self.getFirstItem('', first, name, 'first'))
+					valTab.append(self.getFirstItem('', firstHref, name, 'first'))
 			return valTab
 
 		if 'W1MP' == name:
