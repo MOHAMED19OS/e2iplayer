@@ -2063,18 +2063,22 @@ class E2iPlayerWidget(Screen):
         # save groups order if user change it at player selection
         if self.newDisplayGroupsList != self.displayGroupsList:
             # filters by key rather than assuming "everything except the
-            # last N items are real groups" (positional) - "all"/"config"
-            # can end up anywhere but the very end of the list (e.g.
+            # last N items are real groups" (positional) - the reserved
+            # keys can end up anywhere but the very end of the list (e.g.
             # after "Sort by name" in PlayerSelectorWidget's own BLUE
-            # menu, which has no guard keeping these two reserved keys
-            # pinned in place), and a positional cut would then persist
-            # them into iptvplayerhostsgroups.json as if they were real
-            # group names. "all"/"config" are always reserved (same
-            # filter list getNumOfSpecialItems() itself uses) and never
-            # belong in the saved group list. IPTVHostsGroups.getGroupsList()
-            # also filters these two out on load, to self-heal any
-            # install whose file already has this corruption.
-            groupList = [item[1] for item in self.newDisplayGroupsList if item[1] not in ('config', 'all')]
+            # menu, which has no guard keeping them pinned in place), and
+            # a positional cut would then persist them into
+            # iptvplayerhostsgroups.json as if they were real group names.
+            #
+            # Which keys are reserved depends on GRIDSUPPORT, matching
+            # exactly what selectGroup() appended and what
+            # getGroupsList()/getNumOfSpecialItems() treat as special:
+            # Legacy appends BOTH "all" and "config"; GRIDSUPPORT appends
+            # neither and "all" is one of its real PREDEFINED_GROUPS.
+            # Filtering "all" out here on GRIDSUPPORT made setGroupList()
+            # mark the "All" group disabled on every group-list reorder.
+            reservedKeys = ('config',) if GRIDSUPPORT else ('config', 'all')
+            groupList = [item[1] for item in self.newDisplayGroupsList if item[1] not in reservedKeys]
             self.groupObj.setGroupList(groupList)
 
         self.selectItemCallback(ret, 'selectgroup')
