@@ -162,7 +162,7 @@ class Proxy(http.server.SimpleHTTPRequestHandler):
         if keyUrl.startswith('/https/'):
             keyUrl = 'https://' + keyUrl[7:]
         elif keyUrl.startswith('/http/'):
-            keyUrl = 'http://' + keyUrl[6:]
+            keyUrl = 'http://' + keyUrl[6:]  # NOSONAR - rebuilds whatever scheme the /http/ proxy path asked for
 
         printDBG("do_GET: " + keyUrl)
 
