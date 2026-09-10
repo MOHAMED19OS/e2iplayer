@@ -135,8 +135,8 @@ def encrypt(secret_token, data):
 class Myjdapi:
     def __init__(self):
         self._request_id = int(time.time() * 1000)
-        self._api_url = "http://api.jdownloader.org"
-        self._app_key = "http://git.io/vmcsk"
+        self._api_url = "http://api.jdownloader.org"  # NOSONAR - MyJDownloader API base; requests are AES-signed on top
+        self._app_key = "http://git.io/vmcsk"  # NOSONAR - fixed protocol identifier string, never dereferenced
         self._api_version = 1
         self._devices = None
         self._login_secret = None
