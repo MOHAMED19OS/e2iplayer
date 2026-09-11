@@ -19,11 +19,6 @@ import base64
 import random
 
 try:
-	import http.client as httplib  # Python 3
-except ImportError:
-	import httplib  # Python 2
-
-try:
 	import json
 except ImportError:
 	import simplejson as json
@@ -637,6 +632,12 @@ class Host(CBaseHostClass, XXXParser):
 		return url
 
 	def getPage(self, baseUrl, cookie_domain, cloud_domain, params={}, post_data=None, userAgent=None):
+		# work on our own copy - params defaults to a shared dict (and callers
+		# pass self.defaultParams, itself reused/reassigned all over this
+		# class), so mutating it in place here would leak cloudflare_params
+		# (and whatever getPageCFProtection() adds on top: header/cookiefile/
+		# CFProtection) into unrelated later calls that share the same dict
+		params = dict(params)
 		COOKIEFILE = join(GetCookieDir(), cookie_domain)
 		agent = userAgent or USER_AGENT
 		self.HEADER = {'User-Agent': agent, 'Accept': 'text/html'}
@@ -647,32 +648,20 @@ class Host(CBaseHostClass, XXXParser):
 		def _getFullUrl(url):
 			return url if self.cm.isValidUrl(url) else urljoin(baseUrl, url)
 
-		if params == {}:
-			params = dict(self.defaultParams)
+		# own copy for the same reason as getPage() above
+		params = dict(params) if params else dict(self.defaultParams)
 		COOKIEFILE = join(GetCookieDir(), cookie_domain)
 		params['cookie_items'] = {'xxx': 'ok'}
 		params['cloudflare_params'] = {'domain': cloud_domain, 'cookie_file': COOKIEFILE, 'User-Agent': USER_AGENT, 'full_url_handle': _getFullUrl}
 		return self.cm.getPageCFProtection(baseUrl, params, post_data)
 
 	def _getPage(self, url, addParams={}, post_data=None):
-		try:
-			def patch_http_response_read(func):
-				def inner(*args):
-					try:
-						return func(*args)
-					except httplib.IncompleteRead as e:
-						return e.partial
-				return inner
-			prev_read = httplib.HTTPResponse.read
-			httplib.HTTPResponse.read = patch_http_response_read(httplib.HTTPResponse.read)
-		except Exception:
-			printExc()
-		sts, data = self.cm.getPage(url, addParams, post_data)
-		try:
-			httplib.HTTPResponse.read = prev_read
-		except Exception:
-			printExc()
-		return sts, data
+		# IncompleteRead (server closes the connection before delivering the
+		# full advertised Content-Length) is now handled centrally in
+		# common._readHttpResponse(), which falls back to the partial body
+		# instead of losing the response - no more need to monkeypatch
+		# httplib.HTTPResponse.read process-wide from here.
+		return self.cm.getPage(url, addParams, post_data)
 
 	def getPageWithCFBypass(self, url, max_retries=3, params=None):
 		printDBG("getPageWithCFBypass >>> url: " + url)

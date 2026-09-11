@@ -959,7 +959,7 @@ class CBaseHostClass:
 
     def listsHistory(self, baseItem={'name': 'history', 'category': 'search'}, desc_key='plot', desc_base=None):
         if desc_base is None:
-            desc_base = _("Type: ")
+            desc_base = _("Type:") + " "
         list = self.history.getHistoryList()
         for histItem in list:
             plot = ''

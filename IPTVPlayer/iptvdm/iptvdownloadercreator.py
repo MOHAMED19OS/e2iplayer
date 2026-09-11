@@ -122,7 +122,7 @@ def DownloaderCreator(url):
     # then ALWAYS prefer FFMPEGDownloader,
     # even for m3u8/HLS.
     #################################################
-    if useFFmpeg or ffmpegCase in ['kinoger', 'pornslash']:
+    if useFFmpeg or ffmpegCase in ['kinoger']:
         printDBG("DownloaderCreator: force FFMPEGDownloader by iptv_use_ffmpeg=True or iptv_ffmpeg_case[%s]" % ffmpegCase)
         try:
             return FFMPEGDownloader()

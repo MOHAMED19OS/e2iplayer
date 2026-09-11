@@ -2392,7 +2392,8 @@ class pageParser(CaptchaHelper):
         def xn(e, v):
             if v:
                 v = int(v)
-                e = [e[v - 1], e[len(e) - v]]
+                if 0 < v <= len(e):
+                    e = [e[v - 1], e[len(e) - v]]
             t = list(map(ft, e))
             return b"".join(t)
 
@@ -2531,7 +2532,10 @@ class pageParser(CaptchaHelper):
         for redirectDomain in ["boosteradx.online", "byse.sx", "streamlyplayer.online"]:
             baseUrl = baseUrl.replace(redirectDomain, "streamlyplayero.online")
         ref = urlparser.getDomain(baseUrl, False)
-        mid = re.search(r"/(?:e|d|download)/([0-9a-zA-Z]+)", baseUrl).group(1)
+        midMatch = re.search(r"/(?:e|d|download)/([0-9a-zA-Z]+)", baseUrl)
+        if not midMatch:
+            return []
+        mid = midMatch.group(1)
         HTTP_HEADER = self.cm.getDefaultHeader()
         HTTP_HEADER["User-Agent"] = UA
         HTTP_HEADER["Referer"] = ref
