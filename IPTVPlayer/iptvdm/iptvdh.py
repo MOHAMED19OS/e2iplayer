@@ -45,6 +45,11 @@ class DMItemBase:
         # instance of downloader
         self.downloader = None
         self.callback = None
+        # downloader.getName() at the moment it was created - kept
+        # separately from self.downloader (which is cleared once the
+        # download finishes) so the UI can still show which downloader was
+        # used for an already-finished/aborted item
+        self.downloaderName = ""
 
     def __del__(self):
         printDBG("DMItemBase.__del__  ---------------------")

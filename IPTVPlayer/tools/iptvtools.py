@@ -645,6 +645,17 @@ def _debugCfg(name, default):
         return default
 
 
+def KeepDebugArtifact(configName):
+    """True when debug logging is enabled AND the given per-artifact
+    'keep debug files' toggle (config.plugins.iptvplayer.<configName>) is on.
+    Used by call sites that leave a helper file (e.g. an .iptv.cmd, a
+    temporary JS script) on disk for troubleshooting instead of deleting it
+    right away."""
+    if getDebugMode() == '':
+        return False
+    return _debugCfg(configName, True)
+
+
 def _rotatedGlob(path):
     base, ext = os.path.splitext(path)
     try:
