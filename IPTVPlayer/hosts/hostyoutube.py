@@ -653,7 +653,6 @@ class Youtube(CBaseHostClass):
             else:
                 self.addDir(item)
 
-
     def listCategory(self, cItem, searchMode=False):
         printDBG("Youtube.listCategory cItem[%s]" % cItem)
 
