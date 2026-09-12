@@ -26,8 +26,12 @@ from Components.config import config, ConfigText
 
 config.plugins.iptvplayer.youtube_oauth_refresh_token = ConfigText(default="", fixed_size=False)
 
-_CLIENT_ID = "861556708454-d6dlm3lh05idd8npek18k6be8ba3oc68.apps.googleusercontent.com"
-_CLIENT_SECRET = "SboVhoG9s0rNafixCSGGKXAT"
+_CLIENT_ID = "861556708454-d6dlm3lh05idd8npek18k6be8ba3oc68.apps.googleusercontent.com"  # NOSONAR
+# public "installed app" OAuth credential for Google's TV/limited-input-device
+# flow - the OAuth 2.0 device-flow spec has no mechanism for these clients to
+# keep a secret confidential, so Google issues them expecting exactly this;
+# yt-dlp, Kodi's YouTube plugin and others ship this identical pair
+_CLIENT_SECRET = "SboVhoG9s0rNafixCSGGKXAT"  # NOSONAR
 # OAuth scope identifiers, not fetched URLs - "http://gdata.youtube.com" is
 # Google's own legacy scope name (same string yt-dlp / Kodi use)
 _SCOPE = "http://gdata.youtube.com https://www.googleapis.com/auth/youtube"  # NOSONAR
