@@ -192,7 +192,7 @@ class E2iPlayerWidget(Screen):
                 <widget name="headertext" position="320,70" zPosition="1" size="940,40" font="Regular; 20" transparent="1" halign="left" valign="center" backgroundColor="black" foregroundColor="#178ef5" borderWidth="1" borderColor="black" shadowColor="black" shadowOffset="-2,-2" />
                 <widget name="statustext" position="410,230" zPosition="1" size="685,90" font="Regular;30" halign="left" valign="top" transparent="1" backgroundColor="black" foregroundColor="white" />
                 <widget name="list" position="320,110" zPosition="2" size="940,384" itemHeight="32" font="Regular;20" scrollbarMode="showOnDemand" scrollbarSliderBorderWidth="1" scrollbarForegroundColor="#1b5a91" scrollbarBorderColor="#00b6b6b6" enableWrapAround="1" transparent="1" foregroundColor="white" backgroundColor="black" foregroundColorSelected="white" backgroundColorSelected="#1b5a91" borderWidth="1" borderColor="black" />
-                <widget name="console" position="20,500" zPosition="1" size="1240,154" font="Regular;20" transparent="1" foregroundColor="white" backgroundColor="black" borderWidth="1" borderColor="black" shadowColor="black" shadowOffset="-2,-2" halign="left" valign="center" />
+                <widget name="console" position="20,500" zPosition="1" size="1240,154" font="Regular;20" transparent="1" foregroundColor="white" backgroundColor="black" borderWidth="1" borderColor="black" halign="left" valign="center" />
                 <widget name="sequencer" position="0,0" zPosition="6" size="1280,%d" font="Regular;160" halign="center" valign="center" transparent="1" backgroundColor="#00000000" />
                 <widget name="cover" position="20,70" size="288,420" zPosition="3" alphatest="blend" />
                 <widget name="spinner"   zPosition="2" position="463,200" size="16,16" transparent="1" alphatest="blend" />
@@ -2668,6 +2668,8 @@ class E2iPlayerWidget(Screen):
                     if IsUrlDownloadable(url):
                         fullFilePath = downloadingPath + '/' + titleOfMovie + fileExtension
                         ret = gDownloadManager.addToDQueue(DMItem(url, fullFilePath))
+                        if not ret:
+                            self.session.open(MessageBox, _("File [%s] is already in the downloading queue.") % titleOfMovie, type=MessageBox.TYPE_INFO, timeout=10)
                     else:
                         ret = False
                         self.session.open(MessageBox, _("File can not be downloaded. Protocol [%s] is unsupported") % url.meta.get('iptv_proto', ''), type=MessageBox.TYPE_INFO, timeout=10)
@@ -2681,6 +2683,7 @@ class E2iPlayerWidget(Screen):
                         self.stopAutoPlaySequencer()
                 else:
                     self.stopAutoPlaySequencer()
+                    self.session.open(MessageBox, _("File can not be downloaded. Download manager is not available."), type=MessageBox.TYPE_ERROR, timeout=10)
             else:
                 # genuinely about to stream (not download) and every earlier check
                 # (blocked url, missing directory, low disk space) already passed -

@@ -145,6 +145,8 @@ config.plugins.iptvplayer.debug_on_limit = ConfigSelection(default="truncate", c
     ("rotate", _("rotate (keep the old one as iptv-<date>.dbg)"))])
 config.plugins.iptvplayer.debug_rotate_keep = ConfigSelection(default="3", choices=[
     ("1", "1"), ("2", "2"), ("3", "3"), ("5", "5"), ("10", "10")])
+config.plugins.iptvplayer.debug_keep_ffmpeg_cmd = ConfigYesNo(default=True)
+config.plugins.iptvplayer.debug_keep_js_scripts = ConfigYesNo(default=True)
 
 # icons
 config.plugins.iptvplayer.IconsSize = ConfigSelection(default="100", choices=[("100", "100x100"), ("120", "120x120"), ("135", "135x135")])
@@ -578,6 +580,11 @@ class ConfigMenu(ConfigBaseWidget):
 
         list.append(getConfigListEntry(_("----- DEBUG CONFIGURATION -----"), ))
         list.append(getConfigListEntry(_("Debug logs"), config.plugins.iptvplayer.debugprint))
+        if config.plugins.iptvplayer.debugprint.value != "":
+            list.append(getConfigListEntry("    " + _("Keep FFmpeg command files (.iptv.cmd)"), config.plugins.iptvplayer.debug_keep_ffmpeg_cmd))
+            list.append(getConfigListEntry("        " + _("saved next to the downloaded video file"), ))
+            list.append(getConfigListEntry("    " + _("Keep temporary JS scripts"), config.plugins.iptvplayer.debug_keep_js_scripts))
+            list.append(getConfigListEntry("        " + _("saved in the temporary data folder"), ))
         if config.plugins.iptvplayer.debugprint.value not in ("", "console"):
             list.append(getConfigListEntry("    " + _("Clear the log file at plugin start"), config.plugins.iptvplayer.debug_clear_on_start))
             list.append(getConfigListEntry("    " + _("Maximum log file size"), config.plugins.iptvplayer.debug_max_size))

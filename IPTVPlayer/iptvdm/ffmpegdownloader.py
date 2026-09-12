@@ -28,7 +28,7 @@
 ###################################################
 # LOCAL import
 ###################################################
-from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, iptv_system, eConnectCallback, rm, WriteTextFile, GetNice, getDebugMode
+from Plugins.Extensions.IPTVPlayer.tools.iptvtools import printDBG, printExc, iptv_system, eConnectCallback, rm, WriteTextFile, GetNice, KeepDebugArtifact
 from Plugins.Extensions.IPTVPlayer.tools.iptvtypes import strwithmeta
 from Plugins.Extensions.IPTVPlayer.iptvdm.basedownloader import BaseDownloader
 from Plugins.Extensions.IPTVPlayer.iptvdm.iptvdh import DMHelper
@@ -309,7 +309,7 @@ class FFMPEGDownloader(BaseDownloader):
     def _cmdFinished(self, code, terminated=False):
         printDBG("FFMPEGDownloader._cmdFinished code[%r] terminated[%r]" % (code, terminated))
 
-        if '' == getDebugMode():
+        if not KeepDebugArtifact('debug_keep_ffmpeg_cmd'):
             rm(self.fileCmdPath)
 
         # break circular references
