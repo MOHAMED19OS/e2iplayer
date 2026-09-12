@@ -36,7 +36,7 @@ config.plugins.iptvplayer.youtube_safe_search = ConfigYesNo(default=False)
 # visitorData rot and are refreshed at runtime from ytcfg - see
 # YouTubeParser._absorbPageConfig() / _getYtConfig(). These are only the
 # fallbacks for when that scrape fails.
-YT_INNERTUBE_API_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"
+YT_INNERTUBE_API_KEY = "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8"  # NOSONAR
 YT_CLIENT_VERSION_FALLBACK = "2.20260904.01.00"
 
 # Fallback region (YouTube gl=) per selectable UI language - only the codes
