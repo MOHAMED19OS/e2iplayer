@@ -461,11 +461,10 @@ def getDirectM3U8Playlist(M3U8Url, checkExt=True, variantCheck=True, cookieParam
                         codecs.append(c.split('.')[0].strip())
                         item['codecs'] = ','.join(codecs)
                 except Exception:
-                    item['codecs'] = None
-                item['name'] = "bitrate: %s res: %dx%d %s" % (item['bitrate'],
-                                                              item['width'],
-                                                              item['height'],
-                                                              item['codecs'])
+                    item['codecs'] = ''
+                item['name'] = "bitrate: %s res: %dx%d" % (item['bitrate'], item['width'], item['height'])
+                if item['codecs']:
+                    item['name'] += ' ' + item['codecs']
                 try:
                     videoRange = playlist.stream_info.video_range
                     if videoRange and videoRange.upper() not in ('SDR', ''):
